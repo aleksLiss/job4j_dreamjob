@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="fragments/header :: header"></head>
 <body>
+<div th:replace="fragments/navigation :: navigation"></div>
 <div class="container">
     <div class="row">
         <table class="table">
@@ -13,10 +14,10 @@
             </thead>
             <tbody>
             <tr th:each="candidate: ${candidates}">
-                <td th:text="${candidate.id}" />
-                <td th:text="${candidate.name}" />
-                <td th:text="${candidate.description}" />
-                <td th:text="${candidate.creationDate}" />
+                <td th:text="${candidate.id}"/>
+                <td th:text="${candidate.name}"/>
+                <td th:text="${candidate.description}"/>
+                <td th:text="${candidate.creationDate}"/>
             </tr>
             </tbody>
         </table>
