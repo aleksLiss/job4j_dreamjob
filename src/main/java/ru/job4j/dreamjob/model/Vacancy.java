@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Vacancy {
+
     private int id;
     private String title;
     private String description;
