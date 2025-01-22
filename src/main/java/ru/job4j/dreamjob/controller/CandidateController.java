@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.job4j.dreamjob.model.Candidate;
 import ru.job4j.dreamjob.repository.MemoryCandidateRepository;
 
+import java.util.Optional;
+
 @Controller
 @RequestMapping("/candidates")
 public class CandidateController {
@@ -31,29 +33,32 @@ public class CandidateController {
 
     @GetMapping("/{id}")
     public String getById(Model model, @PathVariable int id) {
-        return candidateRepository.findById(id).map(
-                candidate -> setMessageAndAttr(model, "candidate", candidate)
-        ).orElseGet(() -> setMessageAndAttr(model, "message", "Кандидат с указанным идентификатором не найден."));
+        Optional<Candidate> candidateOptional = candidateRepository.findById(id);
+        if (candidateOptional.isEmpty()) {
+            model.addAttribute("message", "Кандидат с указанным идентификатором не найден.");
+            return "errors/404";
+        }
+        model.addAttribute("candidate", candidateOptional.get());
+        return "candidates/one";
     }
 
     @PostMapping("/update")
     public String update(@ModelAttribute Candidate candidate, Model model) {
-        return !candidateRepository.update(candidate)
-                ? setMessageAndAttr(model, "message", "Кандидат с указанным идентификатором не найден.")
-                : "redirect:/candidates";
+        boolean isUpdated = candidateRepository.update(candidate);
+        if (!isUpdated) {
+            model.addAttribute("message", "Кандидат с указанным идентификатором не найден.");
+            return "errors/404";
+        }
+        return "redirect:/candidates";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteById(Model model, @PathVariable int id) {
-        return !candidateRepository.deleteById(id)
-                ? setMessageAndAttr(model, "message", "Кандидат с указанным идентификатором не найден.")
-                : "redirect:/candidates";
-    }
-
-    private String setMessageAndAttr(Model model, String message, Object attr) {
-        model.addAttribute(message, attr);
-        return "message".equals(message)
-                ? "errors/404"
-                : "candidates/one";
+        boolean isDeleted = candidateRepository.deleteById(id);
+        if (!isDeleted) {
+            model.addAttribute("message", "Кандидат с указанным идентификатором не найден.");
+            return "errors/404";
+        }
+        return "redirect:/candidates";
     }
 }
