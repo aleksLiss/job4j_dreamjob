@@ -7,6 +7,8 @@ import ru.job4j.dreamjob.model.Vacancy;
 import ru.job4j.dreamjob.repository.MemoryVacancyRepository;
 import ru.job4j.dreamjob.repository.VacancyRepository;
 
+import java.util.Optional;
+
 @Controller
 @RequestMapping("/vacancies")
 public class VacancyController {
@@ -31,31 +33,32 @@ public class VacancyController {
 
     @GetMapping("/{id}")
     public String getById(Model model, @PathVariable int id) {
-        return vacancyRepository.findById(id).map(
-                        vacancy -> setMessageAndAttr(model, "vacancy", vacancy))
-                .orElseGet(
-                        () -> setMessageAndAttr(model, "message", "Вакансия с указанным идентификатором не найдена."));
+        Optional<Vacancy> vacancyOptional = vacancyRepository.findById(id);
+        if (vacancyOptional.isEmpty()) {
+            model.addAttribute("message", "Вакансия с указанным идентификатором не найдена.");
+            return "errors/404";
+        }
+        model.addAttribute("vacancy", vacancyOptional.get());
+        return "vacancies/one";
     }
 
     @PostMapping("/update")
     public String update(@ModelAttribute Vacancy vacancy, Model model) {
-        return !vacancyRepository.update(vacancy)
-                ? setMessageAndAttr(model, "message", "Вакансия с указанным идентификатором не найдена.")
-                : "redirect:/vacancies";
+        boolean isUpdated = vacancyRepository.update(vacancy);
+        if (!isUpdated) {
+            model.addAttribute("message", "Вакансия с указанным идентификатором не найдена.");
+            return "errors/404";
+        }
+        return "redirect:/vacancies";
     }
 
     @GetMapping("/delete/{id}")
     public String delete(Model model, @PathVariable int id) {
-        return !vacancyRepository.deleteById(id)
-                ? setMessageAndAttr(model, "message", "Вакансия с указанным идентификатором не найдена.")
-                : "redirect:/vacancies";
+        boolean isDeleted = vacancyRepository.deleteById(id);
+        if (!isDeleted) {
+            model.addAttribute("message", "Вакансия с указанным идентификатором не найдена.");
+            return "errors/404";
+        }
+        return "redirect:/vacancies";
     }
-
-    private String setMessageAndAttr(Model model, String message, Object attr) {
-        model.addAttribute(message, attr);
-        return "message".equals(message)
-                ? "errors/404"
-                : "vacancies/one";
-    }
-
 }
