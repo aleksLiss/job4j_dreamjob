@@ -5,11 +5,12 @@ import ru.job4j.dreamjob.model.Vacancy;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Repository
 public class MemoryVacancyRepository implements VacancyRepository {
 
-    private int nextId = 1;
+    private final AtomicInteger nextId = new AtomicInteger(1);
     private final Map<Integer, Vacancy> vacansies = new HashMap<>();
 
     private MemoryVacancyRepository() {
@@ -29,7 +30,7 @@ public class MemoryVacancyRepository implements VacancyRepository {
 
     @Override
     public Vacancy save(Vacancy vacancy) {
-        vacancy.setId(nextId++);
+        vacancy.setId(nextId.incrementAndGet());
         vacansies.put(vacancy.getId(), vacancy);
         return vacancy;
     }
