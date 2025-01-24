@@ -1,13 +1,14 @@
 package ru.job4j.dreamjob.repository;
 
+import org.springframework.stereotype.Repository;
 import ru.job4j.dreamjob.model.Vacancy;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
+@Repository
 public class MemoryVacancyRepository implements VacancyRepository {
 
-    public static final MemoryVacancyRepository INSTANCE = new MemoryVacancyRepository();
     private int nextId = 1;
     private final Map<Integer, Vacancy> vacansies = new HashMap<>();
 
@@ -24,10 +25,6 @@ public class MemoryVacancyRepository implements VacancyRepository {
                 getDefaultDescriptionAboutVacancies("middle+"), LocalDateTime.now()));
         save(new Vacancy(0, "Senior Java Developer",
                 getDefaultDescriptionAboutVacancies("senior"), LocalDateTime.now()));
-    }
-
-    public static MemoryVacancyRepository getInstance() {
-        return INSTANCE;
     }
 
     @Override
@@ -69,7 +66,7 @@ public class MemoryVacancyRepository implements VacancyRepository {
             case "intern":
                 defaultDescrition = "Интерн Java-разработчик — это начинающий специалист,\n"
                         + "который проходит стажировку или обучение в области разработки программного обеспечения с использованием языка Java.";
-                   break;
+                break;
             case "junior":
                 defaultDescrition = "Джуниор Java разработчик — это начинающий специалист в области программирования,\n"
                         + " который работает с языком Java и связанными с ним технологиями.";
