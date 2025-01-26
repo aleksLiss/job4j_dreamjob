@@ -15,17 +15,17 @@ public class MemoryVacancyRepository implements VacancyRepository {
 
     private MemoryVacancyRepository() {
         save(new Vacancy(0, "Intern Java Developer",
-                getDefaultDescriptionAboutVacancies("Intern"), LocalDateTime.now()));
+                getDefaultDescriptionAboutVacancies("Intern"), LocalDateTime.now(), true));
         save(new Vacancy(0, "Junior Java Developer",
-                getDefaultDescriptionAboutVacancies("junior"), LocalDateTime.now()));
+                getDefaultDescriptionAboutVacancies("junior"), LocalDateTime.now(), true));
         save(new Vacancy(0, "Junior+ Java Developer",
-                getDefaultDescriptionAboutVacancies("junior+"), LocalDateTime.now()));
+                getDefaultDescriptionAboutVacancies("junior+"), LocalDateTime.now(), true));
         save(new Vacancy(0, "Middle Java Developer",
-                getDefaultDescriptionAboutVacancies("middle"), LocalDateTime.now()));
+                getDefaultDescriptionAboutVacancies("middle"), LocalDateTime.now(), true));
         save(new Vacancy(0, "Middle+ Java Developer",
-                getDefaultDescriptionAboutVacancies("middle+"), LocalDateTime.now()));
+                getDefaultDescriptionAboutVacancies("middle+"), LocalDateTime.now(), true));
         save(new Vacancy(0, "Senior Java Developer",
-                getDefaultDescriptionAboutVacancies("senior"), LocalDateTime.now()));
+                getDefaultDescriptionAboutVacancies("senior"), LocalDateTime.now(), true));
     }
 
     @Override
@@ -48,7 +48,8 @@ public class MemoryVacancyRepository implements VacancyRepository {
                         oldVacancy.getId(),
                         vacancy.getTitle(),
                         vacancy.getDescription(),
-                        vacancy.getCreationDate())) != null;
+                        vacancy.getCreationDate(),
+                        vacancy.getVisible())) != null;
     }
 
     @Override
