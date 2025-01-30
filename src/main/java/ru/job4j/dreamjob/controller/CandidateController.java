@@ -9,9 +9,9 @@ import ru.job4j.dreamjob.service.CandidateService;
 
 import java.util.Optional;
 
+@ThreadSafe
 @Controller
 @RequestMapping("/candidates")
-@ThreadSafe
 public class CandidateController {
 
     private final CandidateService candidateService;

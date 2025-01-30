@@ -1,5 +1,6 @@
 package ru.job4j.dreamjob.service;
 
+import net.jcip.annotations.ThreadSafe;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.job4j.dreamjob.dto.FileDto;
@@ -12,16 +13,17 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;
 
+@ThreadSafe
 @Service
 public class SimpleFileService implements FileService {
 
-    private final FileRepository fileRepository;
+    private final FileRepository sql2oFileRepository;
 
     private final String storageDirectory;
 
-    public SimpleFileService(FileRepository fileRepository,
+    public SimpleFileService(FileRepository sql2oFileRepository,
                              @Value("${file.directory}") String storageDirectory) {
-        this.fileRepository = fileRepository;
+        this.sql2oFileRepository = sql2oFileRepository;
         this.storageDirectory = storageDirectory;
         createStorageDirectory(storageDirectory);
     }
@@ -38,7 +40,7 @@ public class SimpleFileService implements FileService {
     public File save(FileDto fileDto) {
         var path = getNewFilePath(fileDto.getName());
         writeFileBytes(path, fileDto.getContent());
-        return fileRepository.save(new File(fileDto.getName(), path));
+        return sql2oFileRepository.save(new File(fileDto.getName(), path));
     }
 
     private String getNewFilePath(String sourceName) {
@@ -55,7 +57,7 @@ public class SimpleFileService implements FileService {
 
     @Override
     public Optional<FileDto> getFileById(int id) {
-        var fileOptional = fileRepository.findById(id);
+        var fileOptional = sql2oFileRepository.findById(id);
         if (fileOptional.isEmpty()) {
             return Optional.empty();
         }
@@ -73,10 +75,10 @@ public class SimpleFileService implements FileService {
 
     @Override
     public void deleteById(int id) {
-        var fileOptional = fileRepository.findById(id);
+        var fileOptional = sql2oFileRepository.findById(id);
         if (fileOptional.isPresent()) {
             deleteFile(fileOptional.get().getPath());
-            fileRepository.deleteById(id);
+            sql2oFileRepository.deleteById(id);
         }
     }
 
