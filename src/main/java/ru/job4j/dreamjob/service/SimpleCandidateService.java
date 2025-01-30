@@ -12,34 +12,34 @@ import java.util.Optional;
 @Service
 public class SimpleCandidateService implements CandidateService {
 
-    private final CandidateRepository candidateRepository;
+    private final CandidateRepository sql2oCandidateRepository;
 
-    public SimpleCandidateService(CandidateRepository candidateRepository) {
-        this.candidateRepository = candidateRepository;
+    public SimpleCandidateService(CandidateRepository sql2oCandidateRepository) {
+        this.sql2oCandidateRepository = sql2oCandidateRepository;
     }
 
     @Override
     public Candidate save(Candidate candidate) {
-        return candidateRepository.save(candidate);
+        return sql2oCandidateRepository.save(candidate);
     }
 
     @Override
     public boolean deleteById(int id) {
-        return candidateRepository.deleteById(id);
+        return sql2oCandidateRepository.deleteById(id);
     }
 
     @Override
     public boolean update(Candidate candidate) {
-        return candidateRepository.update(candidate);
+        return sql2oCandidateRepository.update(candidate);
     }
 
     @Override
     public Optional<Candidate> findById(int id) {
-        return candidateRepository.findById(id);
+        return sql2oCandidateRepository.findById(id);
     }
 
     @Override
     public Collection<Candidate> findAll() {
-        return candidateRepository.findAll();
+        return sql2oCandidateRepository.findAll();
     }
 }
