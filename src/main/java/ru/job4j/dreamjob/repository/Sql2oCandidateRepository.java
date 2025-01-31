@@ -36,21 +36,24 @@ public class Sql2oCandidateRepository implements CandidateRepository {
 
     @Override
     public boolean deleteById(int id) {
+        boolean isDeleted;
         try (Connection connection = sql2o.open()) {
             Query query = connection.createQuery("DELETE FROM candidates WHERE id = :id");
             query.addParameter("id", id);
             query.executeUpdate();
-            return true;
+            isDeleted = connection.getResult() != 0;
         }
+        return isDeleted;
     }
 
     @Override
     public boolean update(Candidate candidate) {
         try (Connection connection = sql2o.open()) {
             String sql = """
-                        UPDATE candidates
-                        SET name = :name, description = :description, creation_date = :creationDate
-                        WHERE id = :id
+                    UPDATE candidates
+                    SET name = :name, description = :description,
+                        creation_date = :creationDate
+                    WHERE id = :id
                     """;
             Query query = connection.createQuery(sql)
                     .addParameter("name", candidate.getName())
@@ -67,7 +70,7 @@ public class Sql2oCandidateRepository implements CandidateRepository {
         try (Connection connection = sql2o.open()) {
             Query query = connection.createQuery("SELECT * FROM candidates WHERE id = :id");
             query.addParameter("id", id);
-            Candidate candidate = query.executeAndFetchFirst(Candidate.class);
+            Candidate candidate = query.setColumnMappings(Candidate.COLUMN_MAPPING).executeAndFetchFirst(Candidate.class);
             return Optional.ofNullable(candidate);
         }
     }
@@ -76,7 +79,7 @@ public class Sql2oCandidateRepository implements CandidateRepository {
     public Collection<Candidate> findAll() {
         try (Connection connection = sql2o.open()) {
             Query query = connection.createQuery("SELECT * FROM candidates");
-            return query.executeAndFetch(Candidate.class);
+            return query.setColumnMappings(Candidate.COLUMN_MAPPING).executeAndFetch(Candidate.class);
         }
     }
 }

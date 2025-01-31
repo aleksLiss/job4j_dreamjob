@@ -40,12 +40,14 @@ public class Sql2oVacancyRepository implements VacancyRepository {
 
     @Override
     public boolean deleteById(int id) {
+        boolean isDeleted;
         try (Connection connection = sql2o.open()) {
             Query query = connection.createQuery("DELETE FROM vacancies WHERE id = :id");
             query.addParameter("id", id);
             query.executeUpdate();
-            return true;
+            isDeleted = connection.getResult() != 0;
         }
+        return isDeleted;
     }
 
     @Override
@@ -54,10 +56,9 @@ public class Sql2oVacancyRepository implements VacancyRepository {
             String sql = """
                     UPDATE vacancies
                     SET title = :title, description = :description, creation_date = :creationDate,
-                    visible = :visible, city_id = :cityId, file_id =: fileId
-                    WHERE id =:id                     
+                        visible = :visible, city_id = :cityId, file_id = :fileId
+                    WHERE id = :id
                     """;
-
             Query query = connection.createQuery(sql)
                     .addParameter("title", vacancy.getTitle())
                     .addParameter("description", vacancy.getDescription())
