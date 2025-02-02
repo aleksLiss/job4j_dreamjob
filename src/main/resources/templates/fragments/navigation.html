@@ -9,9 +9,19 @@
             <a class="nav-item nav-link" th:href="@{/vacancies/create}">Создать вакансию</a>
             <a class="nav-item nav-link" th:href="@{/candidates/create}">Создать резюме</a>
         </div>
+        <div class="navbar-nav me-auto" th:if="${user == null || user.name == 'Гость'}">
+            <a class="nav-item nav-link" th:href="@{/users/create}">Регистрация</a>
+            <a class="nav-item nav-link" th:href="@{/users/login}">Войти</a>
+        </div>
+        <div class="navbar-nav me-auto" th:if="${user != null && user.name != 'Гость'}">
+            <a class="nav-item nav-link" href="#" th:text="${user.name}"></a>
+            <a class="nav-item nav-link" th:href="@{/users/logout}">Выйти</a>
+        </div>
+        <!--
         <div class="d-flex">
             <a class="nav-link text-secondary" th:href="@{/users/create}">Регистрация</a>
             <a class="nav-link text-secondary" th:href="@{/users/login}">Войти</a>
         </div>
+        -->
     </div>
 </nav>

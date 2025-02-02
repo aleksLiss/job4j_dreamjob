@@ -1,5 +1,6 @@
 package ru.job4j.dreamjob.controller;
 
+import jakarta.servlet.http.HttpSession;
 import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,19 +16,23 @@ import java.util.Optional;
 public class CandidateController {
 
     private final CandidateService candidateService;
+    private final UserController userController;
 
-    public CandidateController(CandidateService candidateService) {
+    public CandidateController(CandidateService candidateService, UserController userController) {
         this.candidateService = candidateService;
+        this.userController = userController;
     }
 
     @GetMapping
-    public String getAll(Model model) {
+    public String getAll(Model model, HttpSession session) {
+        userController.addUserToModel(session, model);
         model.addAttribute("candidates", candidateService.findAll());
         return "candidates/list";
     }
 
     @GetMapping("/create")
-    public String getCreationPage() {
+    public String getCreationPage(Model model, HttpSession session) {
+        userController.addUserToModel(session, model);
         return "candidates/create";
     }
 
@@ -43,12 +48,13 @@ public class CandidateController {
     }
 
     @GetMapping("/{id}")
-    public String getById(Model model, @PathVariable int id) {
+    public String getById(Model model, @PathVariable int id, HttpSession session) {
         Optional<Candidate> candidateOptional = candidateService.findById(id);
         if (candidateOptional.isEmpty()) {
             model.addAttribute("message", "Кандидат с указанным идентификатором не найден.");
             return "errors/404";
         }
+        userController.addUserToModel(session, model);
         model.addAttribute("candidate", candidateOptional.get());
         return "candidates/one";
     }

@@ -1,5 +1,6 @@
 package ru.job4j.dreamjob.controller;
 
+import jakarta.servlet.http.HttpSession;
 import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,21 +19,25 @@ public class VacancyController {
     private final VacancyService vacancyService;
     private final CityService cityService;
     private final FileService fileService;
+    private final UserController userController;
 
-    public VacancyController(VacancyService vacancyService, CityService cityService, FileService fileService) {
+    public VacancyController(VacancyService vacancyService, CityService cityService, FileService fileService, UserController userController) {
         this.vacancyService = vacancyService;
         this.cityService = cityService;
         this.fileService = fileService;
+        this.userController = userController;
     }
 
     @GetMapping
-    public String getAll(Model model) {
+    public String getAll(Model model, HttpSession session) {
+        userController.addUserToModel(session, model);
         model.addAttribute("vacancies", vacancyService.findAll());
         return "vacancies/list";
     }
 
     @GetMapping("/create")
-    public String getCreationPage(Model model) {
+    public String getCreationPage(Model model, HttpSession session) {
+        userController.addUserToModel(session, model);
         model.addAttribute("cities", cityService.findAll());
         return "vacancies/create";
     }
@@ -49,12 +54,13 @@ public class VacancyController {
     }
 
     @GetMapping("/{id}")
-    public String getById(Model model, @PathVariable int id) {
+    public String getById(Model model, @PathVariable int id, HttpSession session) {
         var vacancyOptional = vacancyService.findById(id);
         if (vacancyOptional.isEmpty()) {
             model.addAttribute("message", "Вакансия с указанным идентификатором не найдена");
             return "errors/404";
         }
+        userController.addUserToModel(session, model);
         model.addAttribute("cities", cityService.findAll());
         model.addAttribute("vacancy", vacancyOptional.get());
         return "vacancies/one";
