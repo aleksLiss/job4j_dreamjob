@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.job4j.dreamjob.model.User;
 import ru.job4j.dreamjob.service.UserService;
 
+import java.util.Optional;
+
 @Controller
 @RequestMapping("/users")
 @ThreadSafe
@@ -16,6 +18,21 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping("/login")
+    public String getLoginPage() {
+        return "users/login";
+    }
+
+    @PostMapping("/login")
+    public String loginUser(@ModelAttribute User user, Model model) {
+        var userOptional = userService.findByEmailAndPassword(user.getEmail(), user.getPassword());
+        if (userOptional.isEmpty()) {
+            model.addAttribute("error", "Почта или пароль введены неверно");
+            return "users/login";
+        }
+        return "redirect:/vacancies";
     }
 
     @GetMapping
@@ -29,10 +46,15 @@ public class UserController {
         return "users/create";
     }
 
-    @PostMapping
-    public String register(@ModelAttribute User user) {
-        userService.save(user);
-        return "redirect:/users";
+    @PostMapping("/create")
+    public String create(@ModelAttribute User user, Model model) {
+        try {
+            userService.save(user);
+            return "redirect:/vacancies";
+        } catch (Exception exception) {
+            model.addAttribute("message", exception.getMessage());
+            return "errors/404";
+        }
     }
 
     @GetMapping("/delete/{id}")

@@ -1,5 +1,6 @@
 package ru.job4j.dreamjob.repository;
 
+import org.springframework.stereotype.Repository;
 import org.sql2o.Connection;
 import org.sql2o.Query;
 import org.sql2o.Sql2o;
@@ -8,6 +9,7 @@ import ru.job4j.dreamjob.model.Candidate;
 import java.util.Collection;
 import java.util.Optional;
 
+@Repository
 public class Sql2oCandidateRepository implements CandidateRepository {
 
     private final Sql2o sql2o;
@@ -19,9 +21,8 @@ public class Sql2oCandidateRepository implements CandidateRepository {
     @Override
     public Candidate save(Candidate candidate) {
         try (Connection connection = sql2o.open()) {
-            String sql = """
-                    INSERT INTO 
-                    candidates(name, description, creation_date)
+            String sql = """ 
+                    INSERT INTO candidates(name, description, creation_date)
                     VALUES(:name, :description, :creationDate)
                     """;
             Query query = connection.createQuery(sql, true)
