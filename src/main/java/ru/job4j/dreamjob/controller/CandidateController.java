@@ -16,23 +16,19 @@ import java.util.Optional;
 public class CandidateController {
 
     private final CandidateService candidateService;
-    private final UserController userController;
 
-    public CandidateController(CandidateService candidateService, UserController userController) {
+    public CandidateController(CandidateService candidateService) {
         this.candidateService = candidateService;
-        this.userController = userController;
     }
 
     @GetMapping
     public String getAll(Model model, HttpSession session) {
-        userController.addUserToModel(session, model);
         model.addAttribute("candidates", candidateService.findAll());
         return "candidates/list";
     }
 
     @GetMapping("/create")
     public String getCreationPage(Model model, HttpSession session) {
-        userController.addUserToModel(session, model);
         return "candidates/create";
     }
 
@@ -54,7 +50,6 @@ public class CandidateController {
             model.addAttribute("message", "Кандидат с указанным идентификатором не найден.");
             return "errors/404";
         }
-        userController.addUserToModel(session, model);
         model.addAttribute("candidate", candidateOptional.get());
         return "candidates/one";
     }

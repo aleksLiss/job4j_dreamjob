@@ -75,13 +75,4 @@ public class UserController {
         }
         return "redirect:/users";
     }
-
-    protected void addUserToModel(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            user = new User();
-            user.setName("Гость");
-        }
-        model.addAttribute("user", user);
-    }
 }
