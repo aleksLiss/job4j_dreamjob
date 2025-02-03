@@ -31,7 +31,7 @@ public class Sql2oUserRepository implements UserRepository {
                     .addParameter("password", user.getPassword());
             int generatedId = query.executeUpdate().getResult();
             user.setId(generatedId);
-            return Optional.of(user);
+            return Optional.ofNullable(user);
         }
     }
 

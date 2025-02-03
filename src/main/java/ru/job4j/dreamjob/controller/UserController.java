@@ -58,13 +58,12 @@ public class UserController {
 
     @PostMapping("/create")
     public String create(@ModelAttribute User user, Model model) {
-        try {
-            userService.save(user);
-            return "redirect:/vacancies";
-        } catch (Exception exception) {
-            model.addAttribute("message", exception.getMessage());
+        Optional<User> savedUser = userService.save(user);
+        if (savedUser.isEmpty()) {
+            model.addAttribute("message", "Пользователь с такой почтой уже существует.");
             return "errors/404";
         }
+        return "redirect:/vacancies";
     }
 
     @GetMapping("/delete/{id}")
