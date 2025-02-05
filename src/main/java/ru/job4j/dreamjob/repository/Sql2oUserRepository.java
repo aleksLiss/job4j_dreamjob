@@ -20,6 +20,10 @@ public class Sql2oUserRepository implements UserRepository {
 
     @Override
     public Optional<User> save(User user) {
+        Optional<User> foundUser = isFoundUserWithEqualEmail(user.getEmail());
+        if (foundUser.isPresent()) {
+            throw new RuntimeException("Пользователь с такой почтой уже существует.");
+        }
         try (Connection connection = sql2o.open()) {
             String sql = """
                     INSERT INTO users (email, name, password)
@@ -32,7 +36,10 @@ public class Sql2oUserRepository implements UserRepository {
             int generatedId = query.executeUpdate().getResult();
             user.setId(generatedId);
             return Optional.ofNullable(user);
+        } catch (Exception ex) {
+            ex.getMessage();
         }
+        return Optional.empty();
     }
 
     @Override
@@ -65,5 +72,16 @@ public class Sql2oUserRepository implements UserRepository {
             isDeleted = connection.getResult() != 0;
         }
         return isDeleted;
+    }
+
+    private Optional<User> isFoundUserWithEqualEmail(String email) {
+        Optional<User> foundUser;
+        try (Connection connection = sql2o.open()) {
+            Query query = connection.createQuery("SELECT * FROM users WHERE email = :email")
+                    .addParameter("email", email);
+            foundUser = Optional.ofNullable(query.setColumnMappings(User.COLUMN_MAPPING)
+                    .executeAndFetchFirst(User.class));
+        }
+        return foundUser;
     }
 }

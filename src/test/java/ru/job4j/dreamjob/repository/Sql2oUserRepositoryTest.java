@@ -56,7 +56,9 @@ class Sql2oUserRepositoryTest {
         User u1 = new User(0, "vova@mail.ru", "vova", "1234");
         User u2 = new User(1, "vova@mail.ru", "vova", "5555");
         sql2oUserRepository.save(u1);
-        assertThatThrownBy(() -> sql2oUserRepository.save(u2));
+        assertThatThrownBy(() -> sql2oUserRepository.save(u2))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageStartingWith("Пользователь с такой почтой уже существует.");
     }
 
     @Test
