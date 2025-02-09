@@ -20,10 +20,6 @@ public class Sql2oUserRepository implements UserRepository {
 
     @Override
     public Optional<User> save(User user) {
-        Optional<User> foundUser = isFoundUserWithEqualEmail(user.getEmail());
-        if (foundUser.isPresent()) {
-            throw new RuntimeException("Пользователь с такой почтой уже существует.");
-        }
         try (Connection connection = sql2o.open()) {
             String sql = """
                     INSERT INTO users (email, name, password)
